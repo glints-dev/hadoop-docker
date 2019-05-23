@@ -1,4 +1,4 @@
-FROM uhopper/hadoop:2.8.1
+FROM glints/hadoop:2.9.2
 
 ENV HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
 RUN mkdir -p /hadoop/dfs/data

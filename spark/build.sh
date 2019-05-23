@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build -t uhopper/hadoop-spark .
+docker build -t glints/hadoop-spark .

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build -t uhopper/hadoop-datanode .
+docker build -t glints/hadoop-datanode .

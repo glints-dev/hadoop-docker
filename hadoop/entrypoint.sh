@@ -1,16 +1,18 @@
 #!/bin/bash
 
 # Set some sensible defaults
-export CORE_CONF_fs_defaultFS=${CORE_CONF_fs_defaultFS:-hdfs://`hostname -f`:8020}
+export CORE_CONF_fs_defaultFS=${CORE_CONF_fs_defaultFS:-hdfs://$(hostname -f):8020}
 
 function addProperty() {
   local path=$1
   local name=$2
   local value=$3
 
+  local escapedEntry
+
   local entry="<property><name>$name</name><value>${value}</value></property>"
-  local escapedEntry=$(echo $entry | sed 's/\//\\\//g')
-  sed -i "/<\/configuration>/ s/.*/${escapedEntry}\n&/" $path
+  escapedEntry=$(echo "$entry" | sed 's/\//\\\//g')
+  sed -i "/<\/configuration>/ s/.*/${escapedEntry}\n&/" "$path"
 }
 
 function configure() {
@@ -22,12 +24,12 @@ function configure() {
     local value
     
     echo "Configuring $module"
-    for c in `printenv | perl -sne 'print "$1 " if m/^${envPrefix}_(.+?)=.*/' -- -envPrefix=$envPrefix`; do 
-        name=`echo ${c} | perl -pe 's/___/-/g; s/__/_/g; s/_/./g'`
+    for c in $(printenv | perl -sne 'print "$1 " if m/^${envPrefix}_(.+?)=.*/' -- "-envPrefix=$envPrefix"); do 
+        name=$(echo "${c}" | perl -pe 's/___/-/g; s/__/_/g; s/_/./g')
         var="${envPrefix}_${c}"
         value=${!var}
         echo " - Setting $name=$value"
-        addProperty /etc/hadoop/$module-site.xml $name "$value"
+        addProperty "/etc/hadoop/$module-site.xml" "$name" "$value"
     done
 }
 
@@ -115,7 +117,7 @@ esac
 
 if [ -n "$HADOOP_CUSTOM_CONF_DIR" ]; then
     if [ -d "$HADOOP_CUSTOM_CONF_DIR" ]; then
-        for f in `ls $HADOOP_CUSTOM_CONF_DIR/`; do
+        for f in "$HADOOP_CUSTOM_CONF_DIR"/*; do
             echo "Applying custom Hadoop configuration file: $f"
             ln -sfn "$HADOOP_CUSTOM_CONF_DIR/$f" "/etc/hadoop/$f"
         done
@@ -124,4 +126,5 @@ if [ -n "$HADOOP_CUSTOM_CONF_DIR" ]; then
     fi
 fi
 
+# shellcheck disable=SC2068
 exec $@

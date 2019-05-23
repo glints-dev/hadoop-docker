@@ -1,6 +1,6 @@
-FROM uhopper/hadoop:2.8.1
+FROM glints/hadoop:2.9.2
 
-ENV SPARK_VERSION 2.1.2
+ENV SPARK_VERSION 2.4.3
 
 ENV SPARK_BIN_URL https://www.apache.org/dist/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-without-hadoop.tgz
 
